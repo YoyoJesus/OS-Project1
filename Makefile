@@ -17,7 +17,7 @@ consumer.o: consumer.cpp
 	$(CXX) $(CXXFLAGS) -c consumer.cpp
 
 run: producer consumer
-	./producer & ./consumer; pkill producer
+	./producer & ./consumer
 
 clean:
 	rm -f *.o $(TARGETS)
