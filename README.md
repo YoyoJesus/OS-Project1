@@ -1,4 +1,5 @@
 # OS-Project1 - The Consumer Producer Problem
+- *Tested on CentOS via Kent State University's Wasp/Hornet Servers*
 
 ## Project Assignment:
 
@@ -32,11 +33,38 @@ The program will run continuously in the background across two threads until the
 You can also run the code manually using the following commands:
 ```{bash}
 g++ producer.cpp -pthread -lrt -o producer
-g++ consumer.cpp -pthread -lrt -o producer
+g++ consumer.cpp -pthread -lrt -o consumer
 ./producer& ./consumer&
 ```
 
 To stop execution, run the following:
 ```{bash}
 pkill consumer & pkill producer
+```
+
+Then to clean up the create files, run these commands:
+```{bash}
+rm -f *.o producer consumer
+rm -f /dev/shm/sharedBuffer
+```
+
+## Example Execution:
+Here is what the code will look like when it is running properly:
+```{bash}
+[asternb1@wasp OS-Project1]$ make run
+g++ -std=c++11 -pthread -c producer.cpp
+g++ -std=c++11 -pthread -o producer producer.o -lrt
+g++ -std=c++11 -pthread -c consumer.cpp
+g++ -std=c++11 -pthread -o consumer consumer.o -lrt
+./producer& ./consumer&
+Producer produced: 88
+Consumer consumed: 88
+Producer produced: 144
+Consumer consumed: 144
+Producer produced: 166
+Consumer consumed: 166
+Producer produced: 62
+Consumer consumed: 62
+Producer produced: 116
+Consumer consumed: 116
 ```
