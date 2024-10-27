@@ -12,40 +12,49 @@
 #include <cstdlib>
 #include <fcntl.h>
 
+constexpr int BUFFER_SIZE = 2;
+
 struct shared_data {
-    sem_t mutex;
-    sem_t full;
     sem_t empty;
-    int buffer_table[2];
+    sem_t full;
+    sem_t mutex;
+    int buffer[BUFFER_SIZE];
 };
 
-void consumer(shared_data *data) {
+void consumer(shared_data* data) {
     while (true) {
-        sem_wait(&data->full); // wait for an item to be placed in the buffer
+        sem_wait(&data->full); // wait for a full buffer
         sem_wait(&data->mutex); // wait for independent access to the buffer
 
-        int item = data->buffer_table[1];
-        data->buffer_table[1] = 0;
+        int item_consumed = 0;
+        // consume the items in the buffer if there are any
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            item_consumed += data->buffer[i];
+            data->buffer[i] = 0;
+        }
 
-        std::cout << "Consumer consumed: " << item << std::endl;
+        std::cout << "Consumer consumed: " << item_consumed << std::endl;
 
-        sem_post(&data->mutex);
-        sem_post(&data->empty);
+        sem_post(&data->mutex); // release the buffer
+        sem_post(&data->empty); // signal that the buffer is empty and item has been consumed
 
         sleep(1);
     }
 }
 
 int main() {
-    srand(time(0)); // seed the random number generator
+    srand(static_cast<unsigned int>(time(0))); // seed the random number generator
 
     int shm_fd = shm_open("/sharedBuffer", O_RDWR, 0666);
+    // if the shared memory failed to open
     if (shm_fd == -1) {
-        std::cerr << "Error: Shared memory failed to open." << std::endl;
+        std::cerr << "Error: Shared memory failed to open. C" << std::endl;
         return 1;
     }
 
-    shared_data *data = (shared_data *) mmap(0, sizeof(shared_data), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    // map the shared memory
+    shared_data* data = (shared_data*) mmap(0, sizeof(shared_data), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    // if the map failed
     if (data == MAP_FAILED) {
         std::cerr << "Error: Map failed." << std::endl;
         return 1;

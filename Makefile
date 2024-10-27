@@ -1,26 +1,25 @@
 CXX = g++
-CXXFLAG = -std=c++11 -pthread
-TARGETS = consumer producer
+CXXFLAGS = -std=c++11 -pthread
+TARGETS = producer consumer
 
 all: $(TARGETS)
 
-consumer: consumer.o
-	$(CXX) $(CXXFLAG) -o consumer consumer.o -lrt
-
 producer: producer.o
-	$(CXX) $(CXXFLAG) -o producer producer.o -lrt
+	$(CXX) $(CXXFLAGS) -o producer producer.o -lrt
 
-consumer.o: consumer.cpp
-	$(CXX) $(CXXFLAG) -c consumer.cpp
+consumer: consumer.o
+	$(CXX) $(CXXFLAGS) -o consumer consumer.o -lrt
 
 producer.o: producer.cpp
-	$(CXX) $(CXXFLAG) -c producer.cpp
+	$(CXX) $(CXXFLAGS) -c producer.cpp
 
-run: $(TARGETS)
-	./producer & ./consumer
+consumer.o: consumer.cpp
+	$(CXX) $(CXXFLAGS) -c consumer.cpp
+
+run: producer consumer
+	./producer & ./consumer; pkill producer
 
 clean:
 	rm -f *.o $(TARGETS)
-	rm -f /dev/shm/sem.* /dev/shm/shm.*
+	rm -f /dev/shm/sharedBuffer
 	pkill producer
-	pkill consumer
