@@ -46,7 +46,7 @@ int main() {
     srand(static_cast<unsigned int>(time(0))); // seed the random number generator
 
     //create shared memory
-    int shm_fd = shm_open("/sharedBuffer", O_CREAT | O_RDWR, 0666);
+    int shm_fd = shm_open("/shared_buffer", O_CREAT | O_RDWR, 0666);
     // if the shared memory failed to open
     if (shm_fd == -1) {
         std::cerr << "Error: Shared memory failed to open. P" << std::endl;

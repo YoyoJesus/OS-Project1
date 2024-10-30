@@ -68,3 +68,5 @@ Consumer consumed: 62
 Producer produced: 116
 Consumer consumed: 116
 ```
+
+- *An additional photo of running code can be found with the example.png file*
